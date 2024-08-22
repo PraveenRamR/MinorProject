@@ -34,6 +34,10 @@ uploaded_file = st.file_uploader("Upload your CSV file", type=["csv"])
 if uploaded_file is not None:
     data = pd.read_csv(uploaded_file)
 
+    # Store original team and opponent names
+    original_teams = data['team'].copy()
+    original_opponents = data['opponent'].copy()
+
     # Display the dataset
     st.subheader("Uploaded Dataset")
     st.dataframe(data)
@@ -89,7 +93,7 @@ if uploaded_file is not None:
 
     # Evaluate the model
     loss, accuracy = model.evaluate(X_test, y_test)
-    st.subheader(f'Test Accuracy: {accuracy:.2f}')
+    #st.subheader(f'Test Accuracy: {accuracy:.2f}')
 
     # Predict the scores for the first 10 matches
     first_10_matches = X[:10]
@@ -99,7 +103,15 @@ if uploaded_file is not None:
     # Convert predictions back to original labels
     predicted_scores = label_encoder_y.inverse_transform(np.argmax(predictions, axis=1))
 
-    # Display the predictions
+    # Create a DataFrame for displaying results
+    results_df = pd.DataFrame({
+        'Match': range(1, 11),
+        'Team': original_teams.iloc[:10],
+        'Opponent': original_opponents.iloc[:10],
+        'GF': data['GF'].iloc[:10],
+        'Predicted Score': predicted_scores
+    })
+
+    # Display the results as a table
     st.subheader("Predicted Scores for the First 10 Matches")
-    for i, score in enumerate(predicted_scores):
-        st.write(f'Match {i+1}: Predicted Score = {score}')
+    st.table(results_df)
