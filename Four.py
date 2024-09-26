@@ -9,6 +9,15 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import EarlyStopping
 from scikeras.wrappers import KerasClassifier
 from sklearn.inspection import permutation_importance
+from streamlit_lottie import st_lottie
+import requests
+import base64
+from streamlit_lottie import st_lottie_spinner
+import time
+
+spinner = 'footballani.json'
+
+
 
 # Function to create the Keras model
 def create_model():
@@ -74,7 +83,7 @@ if uploaded_file is not None:
     wrapped_model = KerasClassifier(build_fn=create_model, epochs=100, batch_size=32, verbose=0)
 
     # Train the wrapped model
-    with st.spinner('Training the model...'):
+    with st_lottie_spinner(spinner, key="download", height=100, width=100):
         wrapped_model.fit(X_train, y_train, validation_split=0.2, callbacks=[EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)])
 
     # Permutation Feature Importance
@@ -88,7 +97,7 @@ if uploaded_file is not None:
 
     # Build and train the main neural network model
     model = create_model()
-    with st.spinner('Training the neural network model...'):
+    with st_lottie_spinner(spinner, key="download1", height=100, width=100):
         history = model.fit(X_train, y_train, validation_split=0.2, epochs=100, batch_size=32, callbacks=[EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)])
 
     # Evaluate the model
@@ -115,3 +124,5 @@ if uploaded_file is not None:
     # Display the results as a table
     st.subheader("Predicted Scores for the First 10 Matches")
     st.table(results_df)
+
+
